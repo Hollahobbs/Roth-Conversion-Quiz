@@ -81,19 +81,15 @@
         </label>
       </div>
 
-      <button type="submit">Start the Quiz</button>
+      <button type="button" id="startQuiz">Start the Quiz</button>
     </form>
   </div>
 
 <script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
-(function() {
-  emailjs.init("vMiHr5c9aL7jTaGJn"); // initialize EmailJS
-})();
+emailjs.init("vMiHr5c9aL7jTaGJn"); // initialize EmailJS
 
-document.getElementById("leadForm").addEventListener("submit", function(e){
-  e.preventDefault(); // prevent default form submission
-
+document.getElementById("startQuiz").addEventListener("click", function() {
   // Generate or reuse leadId
   let leadId = localStorage.getItem("leadId");
   if (!leadId) {
@@ -110,29 +106,29 @@ document.getElementById("leadForm").addEventListener("submit", function(e){
     consent: document.getElementById("consent").checked ? "yes" : "no"
   };
 
+  // Validate required fields manually (since we changed button type)
+  if (!leadData.name || !leadData.state || !leadData.phone || !leadData.email || leadData.consent === "no") {
+    alert("Please complete all fields and consent.");
+    return;
+  }
+
   // Store locally for quiz page
   localStorage.setItem("leadData", JSON.stringify(leadData));
 
-  // Make sure EmailJS SDK is loaded before calling send
-  if (emailjs) {
-    emailjs.send(
-      "service_6ksg4yp",       // Your EmailJS service ID
-      "template_atp2yjk",      // Your EmailJS template ID
-      leadData                 // Send the leadData object
-    ).then(() => {
-        window.location.href = "index.html"; // Redirect after success
-    }).catch((err) => {
-        console.error("EmailJS error:", err);
-        window.location.href = "index.html"; // Redirect even on failure
-    });
-  } else {
-    console.error("EmailJS SDK not loaded");
-    window.location.href = "index.html"; // Fallback redirect
-  }
+  // Send EmailJS email
+  emailjs.send(
+    "service_6ksg4yp",
+    "template_atp2yjk",
+    leadData
+  ).finally(() => {
+    // Redirect to quiz page
+    window.location.href = "index.html";
+  });
 });
 </script>
 
-
+</body>
+</html>
 
 
 
