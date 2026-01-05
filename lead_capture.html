@@ -45,57 +45,6 @@
   </form>
 </div>
 
-<!-- Load EmailJS SDK before the script that uses it -->
-<script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
-
-<script>
-  // Wait for the page to fully load
-  window.onload = function() {
-    // Initialize EmailJS
-    emailjs.init("vMiHr5c9aL7jTaGJn");
-
-    const button = document.getElementById("startQuiz");
-    button.addEventListener("click", function() {
-      const name = document.getElementById("name").value.trim();
-      const state = document.getElementById("state").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const consentChecked = document.getElementById("consent").checked;
-
-      // Validate inputs
-      if (!name || !state || !phone || !email || !consentChecked) {
-        alert("Please complete all fields and check the consent box.");
-        return;
-      }
-
-      // Generate or reuse leadId
-      let leadId = localStorage.getItem("leadId");
-      if (!leadId) {
-        leadId = crypto.randomUUID();
-        localStorage.setItem("leadId", leadId);
-      }
-
-      const leadData = {
-        leadId: leadId,
-        name: name,
-        state: state,
-        phone: phone,
-        email: email,
-        consent: "yes"
-      };
-
-      // Store locally for the quiz page
-      localStorage.setItem("leadData", JSON.stringify(leadData));
-
-      // Send email via EmailJS
-      emailjs.send("service_6ksg4yp", "template_atp2yjk", leadData)
-      .finally(() => {
-        // Always redirect after sending
-        window.location.href = "index.html";
-      });
-    });
-  };
-</script>
 
 </body>
 </html>
