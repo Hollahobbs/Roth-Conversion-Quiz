@@ -87,50 +87,54 @@
 
 <script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
-emailjs.init("vMiHr5c9aL7jTaGJn"); // initialize EmailJS
+document.addEventListener("DOMContentLoaded", function() {
+  // Initialize EmailJS
+  emailjs.init("vMiHr5c9aL7jTaGJn");
 
-document.getElementById("startQuiz").addEventListener("click", function() {
-  // Generate or reuse leadId
-  let leadId = localStorage.getItem("leadId");
-  if (!leadId) {
-    leadId = crypto.randomUUID();
-    localStorage.setItem("leadId", leadId);
-  }
+  document.getElementById("startQuiz").addEventListener("click", function() {
+    // Get form values
+    const name = document.getElementById("name").value.trim();
+    const state = document.getElementById("state").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const consentChecked = document.getElementById("consent").checked;
 
-  const leadData = {
-    leadId: leadId,
-    name: document.getElementById("name").value,
-    state: document.getElementById("state").value,
-    phone: document.getElementById("phone").value,
-    email: document.getElementById("email").value,
-    consent: document.getElementById("consent").checked ? "yes" : "no"
-  };
+    // Validate fields
+    if (!name || !state || !phone || !email || !consentChecked) {
+      alert("Please complete all fields and check the consent box.");
+      return;
+    }
 
-  // Validate required fields manually (since we changed button type)
-  if (!leadData.name || !leadData.state || !leadData.phone || !leadData.email || leadData.consent === "no") {
-    alert("Please complete all fields and consent.");
-    return;
-  }
+    // Generate or reuse leadId
+    let leadId = localStorage.getItem("leadId");
+    if (!leadId) {
+      leadId = crypto.randomUUID();
+      localStorage.setItem("leadId", leadId);
+    }
 
-  // Store locally for quiz page
-  localStorage.setItem("leadData", JSON.stringify(leadData));
+    // Store lead data
+    const leadData = {
+      leadId: leadId,
+      name: name,
+      state: state,
+      phone: phone,
+      email: email,
+      consent: "yes"
+    };
+    localStorage.setItem("leadData", JSON.stringify(leadData));
 
-  // Send EmailJS email
-  emailjs.send(
-    "service_6ksg4yp",
-    "template_atp2yjk",
-    leadData
-  ).finally(() => {
-    // Redirect to quiz page
-    window.location.href = "index.html";
+    // Send via EmailJS
+    emailjs.send(
+      "service_6ksg4yp",       // your service ID
+      "template_atp2yjk",      // your template ID
+      leadData                 // the lead data
+    ).finally(() => {
+      // Redirect to quiz page
+      window.location.href = "index.html";
+    });
   });
 });
 </script>
-
-</body>
-</html>
-
-
 
 </body>
 </html>
