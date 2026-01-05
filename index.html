@@ -220,73 +220,38 @@
     </div>
 </div>
 
+
 <script>
 function calculateScore() {
-    let score = 0;
-    // Score first two questions
-let totalScore = 0;
-const qA = document.querySelector('input[name="qA"]:checked');
-const qB = document.querySelector('input[name="qB"]:checked');
+    let totalScore = 0;
 
-if (!qA || !qB) {
-    alert("Please answer all questions before submitting.");
-    return;
-}
+    const qA = document.querySelector('input[name="qA"]:checked');
+    const qB = document.querySelector('input[name="qB"]:checked');
 
-totalScore += parseInt(qA.value);
-totalScore += parseInt(qB.value);
-
-// Score remaining questions
-for (let i = 1; i <= 10; i++) {
-    const selected = document.querySelector(`input[name="q${i}"]:checked`);
-    if (!selected) {
+    if (!qA || !qB) {
         alert("Please answer all questions before submitting.");
         return;
     }
-    totalScore += parseInt(selected.value);
-}"]:checked`);
-        if (q) {
-            score += parseInt(q.value);
-        } else {
-            alert("Please answer all questions before seeing your results.");
+
+    totalScore += parseInt(qA.value);
+    totalScore += parseInt(qB.value);
+
+    for (let i = 1; i <= 10; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (!selected) {
+            alert("Please answer all questions before submitting.");
             return;
         }
+        totalScore += parseInt(selected.value);
     }
 
-    let resultDiv = 
-// Normalize score across all 12 questions
-const maxScore = 1 + 10 + 90; // qA max 1, qB max 10, q1-q10 assumed max 9 each = 90
-const normalizedScore = Math.round((totalScore / maxScore) * 100);
+    const maxScore = 1 + 10 + 40;
+    const normalizedScore = Math.round((totalScore / maxScore) * 100);
 
-let resultText = "";
-
-if (normalizedScore >= 70) {
-  resultText = "You appear to be a strong candidate for a Roth conversion based on your answers.";
-} else if (normalizedScore >= 40) {
-  resultText = "You may benefit from a Roth conversion, but timing and strategy matter.";
-} else {
-  resultText = "A Roth conversion may not be ideal right now based on your answers.";
-}
-
-document.getElementById("result").innerHTML =
-  `<h2>Your Roth Conversion Readiness Score: ${normalizedScore}%</h2><p>${resultText}</p>`;
-
-    let ctaDiv = document.getElementById("cta");
-
-    if (score <= 15) {
-        resultDiv.className = "low";
-        resultDiv.textContent = "Score: " + score + " — You might not be a strong candidate for a Roth conversion right now.";
-    } else if (score <= 25) {
-        resultDiv.className = "medium";
-        resultDiv.textContent = "Score: " + score + " — You may be a good candidate for a Roth conversion. It's worth exploring your options.";
-    } else {
-        resultDiv.className = "high";
-        resultDiv.textContent = "Score: " + score + " — You appear to be a strong candidate for a Roth conversion.";
-    }
-
-    ctaDiv.style.display = "block";
+    window.location.href = `results.html?score=${normalizedScore}`;
 }
 </script>
+
 
 </body>
 </html>
