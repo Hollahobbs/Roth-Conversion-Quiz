@@ -253,7 +253,7 @@ function calculateScore() {
     const normalizedScore = Math.round((totalScore / maxScore) * 100);
     const leadId = localStorage.getItem("leadId");
 
-    fetch("https://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJHQhHqYpjN1FvMPoqKLh4H3drKteRZKQG_al/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
