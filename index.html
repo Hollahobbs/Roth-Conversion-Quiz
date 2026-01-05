@@ -247,6 +247,30 @@ function calculateScore() {
 
     const maxScore = 1 + 10 + 40;
     const normalizedScore = Math.round((totalScore / maxScore) * 100);
+    const leadId = localStorage.getItem("leadId");
+
+fetch("https://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJHQhHqYpjN1FvMPoqKLh4H3drKteRZKQG_al/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    type: "quiz",
+    leadId: leadId,
+    score: normalizedScore,
+    q1: answers.qA,
+    q2: answers.qB,
+    q3: answers.q1,
+    q4: answers.q2,
+    q5: answers.q3,
+    q6: answers.q4,
+    q7: answers.q5,
+    q8: answers.q6,
+    q9: answers.q7,
+    q10: answers.q8,
+    q11: answers.q9,
+    q12: answers.q10
+  })
+});
+
 
     window.location.href = `results.html?score=${normalizedScore}`;
 }
