@@ -85,14 +85,13 @@
     </form>
   </div>
 
-<script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
 (function() {
-  emailjs.init({ publicKey: "vMiHr5c9aL7jTaGJn" });
+  emailjs.init("vMiHr5c9aL7jTaGJn"); // initialize EmailJS
 })();
 
 document.getElementById("leadForm").addEventListener("submit", function(e){
-  e.preventDefault();
+  e.preventDefault(); // prevent default page reload
 
   // Generate or reuse leadId
   let leadId = localStorage.getItem("leadId");
@@ -107,30 +106,28 @@ document.getElementById("leadForm").addEventListener("submit", function(e){
     state: document.getElementById("state").value,
     phone: document.getElementById("phone").value,
     email: document.getElementById("email").value,
-    consent: "yes"
+    consent: document.getElementById("consent").checked ? "yes" : "no"
   };
 
-  // Store locally for use on quiz page
+  // Store locally for quiz page
   localStorage.setItem("leadData", JSON.stringify(leadData));
 
-  // Send email notification
+  // Send email
   emailjs.send(
-    "service_6ksg4yp",
-    "template_atp2yjk",
-    {
-      leadId: leadData.leadId,
-      name: leadData.name,
-      state: leadData.state,
-      phone: leadData.phone,
-      email: leadData.email,
-      consent: leadData.consent
-    }
-  ).finally(() => {
-    // Redirect to quiz
-    window.location.href = "index.html";
+    "service_6ksg4yp",       // Your EmailJS service ID
+    "template_atp2yjk",      // Your EmailJS template ID
+    leadData                 // Pass the entire leadData object
+  ).then(() => {
+      // Redirect only after successful send
+      window.location.href = "index.html";
+  }).catch((err) => {
+      console.error("EmailJS error:", err);
+      // Still redirect even if email fails
+      window.location.href = "index.html";
   });
 });
 </script>
+
 
 
 
