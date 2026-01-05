@@ -85,13 +85,14 @@
     </form>
   </div>
 
+<script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
 (function() {
   emailjs.init("vMiHr5c9aL7jTaGJn"); // initialize EmailJS
 })();
 
 document.getElementById("leadForm").addEventListener("submit", function(e){
-  e.preventDefault(); // prevent default page reload
+  e.preventDefault(); // prevent default form submission
 
   // Generate or reuse leadId
   let leadId = localStorage.getItem("leadId");
@@ -112,21 +113,25 @@ document.getElementById("leadForm").addEventListener("submit", function(e){
   // Store locally for quiz page
   localStorage.setItem("leadData", JSON.stringify(leadData));
 
-  // Send email
-  emailjs.send(
-    "service_6ksg4yp",       // Your EmailJS service ID
-    "template_atp2yjk",      // Your EmailJS template ID
-    leadData                 // Pass the entire leadData object
-  ).then(() => {
-      // Redirect only after successful send
-      window.location.href = "index.html";
-  }).catch((err) => {
-      console.error("EmailJS error:", err);
-      // Still redirect even if email fails
-      window.location.href = "index.html";
-  });
+  // Make sure EmailJS SDK is loaded before calling send
+  if (emailjs) {
+    emailjs.send(
+      "service_6ksg4yp",       // Your EmailJS service ID
+      "template_atp2yjk",      // Your EmailJS template ID
+      leadData                 // Send the leadData object
+    ).then(() => {
+        window.location.href = "index.html"; // Redirect after success
+    }).catch((err) => {
+        console.error("EmailJS error:", err);
+        window.location.href = "index.html"; // Redirect even on failure
+    });
+  } else {
+    console.error("EmailJS SDK not loaded");
+    window.location.href = "index.html"; // Fallback redirect
+  }
 });
 </script>
+
 
 
 
