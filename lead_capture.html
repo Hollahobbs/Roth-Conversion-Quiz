@@ -5,85 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Start Roth Conversion Quiz</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 40px; }
-    .box { max-width: 500px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: #004080; }
-    label { display: block; margin-top: 15px; font-weight: bold; }
-    input[type="text"], input[type="email"], input[type="tel"] { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    .checkbox { margin-top: 20px; }
-    button { margin-top: 25px; width: 100%; background-color: #004080; color: white; padding: 12px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; }
-    button:hover { background-color: #0066cc; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px;
+    }
+    .box {
+      max-width: 500px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #004080;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .checkbox {
+      margin-top: 20px;
+    }
+    button {
+      margin-top: 25px;
+      width: 100%;
+      background-color: #004080;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0066cc;
+    }
   </style>
 </head>
 <body>
 
-<div class="box">
-  <img src="fgg_logo.png" style="max-width:200px; display:block; margin:0 auto 20px;">
-  <h1>Before You Start</h1>
+  <div class="box">
+    <img src="fgg_logo.png" style="max-width:200px; display:block; margin:0 auto 20px;">
+    <h1>Before You Start</h1>
 
-  <form id="leadForm">
-    <label>Full Name</label>
-    <input type="text" id="name" required>
+    <form onsubmit="saveLead(event)">
+      <label>Full Name</label>
+      <input type="text" id="name" required>
 
-    <label>State</label>
-    <input type="text" id="state" required>
+      <label>State</label>
+      <input type="text" id="state" required>
 
-    <label>Phone Number</label>
-    <input type="tel" id="phone" required>
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required>
 
-    <label>Email Address</label>
-    <input type="email" id="email" required>
+      <label>Email Address</label>
+      <input type="email" id="email" required>
 
-    <div class="checkbox">
-      <input type="checkbox" id="consent" required>
-      <label for="consent" style="font-weight:normal;">
-        I consent to be contacted regarding my quiz results.
-      </label>
-    </div>
+      <div class="checkbox">
+        <input type="checkbox" id="consent" required>
+        <label for="consent" style="font-weight:normal;">
+          I consent to be contacted regarding my quiz results.
+        </label>
+      </div>
 
-    <button type="submit">Start the Quiz</button>
-  </form>
-</div>
+      <button type="submit">Start the Quiz</button>
+    </form>
+  </div>
 
 <script>
-  document.getElementById("leadForm").addEventListener("submit", function(e) {
-    e.preventDefault();  // Prevent the form from submitting the traditional way
+function saveLead(e) {
+  e.preventDefault();
 
-    // Grab values from the form
-    const name = document.getElementById("name").value.trim();
-    const state = document.getElementById("state").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const consent = document.getElementById("consent").checked;
+  const leadId = crypto.randomUUID();
+  localStorage.setItem("leadId", leadId);
 
-    // Validation for empty or unchecked fields
-    if (!name || !state || !phone || !email || !consent) {
-      alert("Please fill out all fields and provide consent.");
-      return;
-    }
-
-    // Store the lead data in localStorage
-    let leadId = localStorage.getItem("leadId");
-    if (!leadId) {
-      leadId = crypto.randomUUID(); // Generate a new leadId if it doesn't exist
-      localStorage.setItem("leadId", leadId);
-    }
-
-    const leadData = {
-      leadId, 
-      name, 
-      state, 
-      phone, 
-      email, 
+  fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "lead",
+      leadId: leadId,
+      name: document.getElementById("name").value,
+      state: document.getElementById("state").value,
+      phone: document.getElementById("phone").value,
+      email: document.getElementById("email").value,
       consent: "yes"
-    };
-
-    // Store locally for future use (e.g., quiz page)
-    localStorage.setItem("leadData", JSON.stringify(leadData));
-
-    // Redirect to the quiz page
+    })
+  }).finally(() => {
     window.location.href = "index.html";
   });
+}
 </script>
 
 </body>
