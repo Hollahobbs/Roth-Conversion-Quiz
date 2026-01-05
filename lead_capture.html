@@ -41,54 +41,59 @@
       </label>
     </div>
 
-    <button type="button" id="startQuiz">Start the Quiz</button>
+    <button type="submit">Start the Quiz</button>
   </form>
 </div>
 
-<!-- EmailJS SDK -->
 <script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
   // Initialize EmailJS
-  (function(){
-      emailjs.init("vMiHr5c9aL7jTaGJn"); // replace with your EmailJS public key
-  })();
+  emailjs.init("vMiHr5c9aL7jTaGJn"); // Replace with your public key
 
-  document.getElementById("startQuiz").addEventListener("click", function() {
-      // Get form values
-      const name = document.getElementById("name").value.trim();
-      const state = document.getElementById("state").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const consent = document.getElementById("consent").checked;
+  document.getElementById("leadForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // prevent default submission
 
-      // Validation
-      if (!name || !state || !phone || !email || !consent) {
-          alert("Please complete all fields and check the consent box.");
-          return;
-      }
+    // Grab field values
+    const name = document.getElementById("name").value.trim();
+    const state = document.getElementById("state").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const consent = document.getElementById("consent").checked;
 
-      // Generate or reuse leadId
-      let leadId = localStorage.getItem("leadId");
-      if (!leadId) {
-          leadId = crypto.randomUUID();
-          localStorage.setItem("leadId", leadId);
-      }
+    if (!consent) {
+      alert("You must consent to proceed.");
+      return;
+    }
 
-      // Store lead data locally
-      const leadData = { leadId, name, state, phone, email, consent: "yes" };
-      localStorage.setItem("leadData", JSON.stringify(leadData));
+    // Generate or reuse leadId
+    let leadId = localStorage.getItem("leadId");
+    if (!leadId) {
+      leadId = crypto.randomUUID();
+      localStorage.setItem("leadId", leadId);
+    }
 
-      // Send email using EmailJS
-      emailjs.send(
-          "service_6ksg4yp",    // replace with your EmailJS service ID
-          "template_atp2yjk",   // replace with your EmailJS template ID
-          leadData
-      ).then(() => {
-          console.log("Email sent successfully!");
-          window.location.href = "index.html"; // redirect after success
-      }).catch((err) => {
-          console.error("EmailJS error:", err);
-          window.location.href = "index.html"; // still redirect even if email fails
+    const leadData = {
+      leadId,
+      name,
+      state,
+      phone,
+      email,
+      consent: "yes"
+    };
+
+    // Store lead info locally for use on quiz page
+    localStorage.setItem("leadData", JSON.stringify(leadData));
+
+    // Send email via EmailJS
+    emailjs.send("service_6ksg4yp", "template_atp2yjk", leadData)
+      .then(() => {
+        // Redirect to quiz page after success
+        window.location.href = "index.html";
+      })
+      .catch((err) => {
+        console.error("EmailJS error:", err);
+        // Still redirect even if email fails
+        window.location.href = "index.html";
       });
   });
 </script>
