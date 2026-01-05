@@ -85,19 +85,31 @@
     </form>
   </div>
 
-  <script>
-    function saveLead(e) {
-      e.preventDefault();
+<script>
+function saveLead(e) {
+  e.preventDefault();
 
-      localStorage.setItem("lead_name", document.getElementById("name").value);
-      localStorage.setItem("lead_state", document.getElementById("state").value);
-      localStorage.setItem("lead_phone", document.getElementById("phone").value);
-      localStorage.setItem("lead_email", document.getElementById("email").value);
-      localStorage.setItem("lead_consent", "yes");
+  const leadId = crypto.randomUUID();
+  localStorage.setItem("leadId", leadId);
 
-      window.location.href = "index.html";
-    }
-  </script>
+  fetch("https://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJHQhHqYpjN1FvMPoqKLh4H3drKteRZKQG_al/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "lead",
+      leadId: leadId,
+      name: document.getElementById("name").value,
+      state: document.getElementById("state").value,
+      phone: document.getElementById("phone").value,
+      email: document.getElementById("email").value,
+      consent: "yes"
+    })
+  }).finally(() => {
+    window.location.href = "index.html";
+  });
+}
+</script>
+
 
 </body>
 </html>
