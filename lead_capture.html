@@ -61,7 +61,7 @@
     <img src="fgg_logo.png" style="max-width:200px; display:block; margin:0 auto 20px;">
     <h1>Before You Start</h1>
 
-    <form id="leadCaptureForm">
+    <form onsubmit="saveLead(event)">
       <label>Full Name</label>
       <input type="text" id="name" required>
 
@@ -86,38 +86,28 @@
   </div>
 
 <script>
-  document.getElementById("leadCaptureForm").addEventListener("submit", function(e) {
-    e.preventDefault();  // Prevent the default form submission (which would use GET)
+function saveLead(e) {
+  e.preventDefault();
 
-    const leadId = crypto.randomUUID(); // Create a unique lead ID
-    localStorage.setItem("leadId", leadId);  // Store it in localStorage
+  const leadId = crypto.randomUUID();
+  localStorage.setItem("leadId", leadId);
 
-    const formData = {
+  fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       type: "lead",
       leadId: leadId,
       name: document.getElementById("name").value,
       state: document.getElementById("state").value,
       phone: document.getElementById("phone").value,
       email: document.getElementById("email").value,
-      consent: document.getElementById("consent").checked ? "yes" : "no"
-    };
-
-    console.log("Sending data to Google Apps Script:", formData);
-
-    fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
-      method: "POST",  // This ensures the request is a POST
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
+      consent: "yes"
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Response from Apps Script:", data);
-      window.location.href = "index.html";  // Redirect to the quiz page after successful submission
-    })
-    .catch(error => {
-      console.error("Error during fetch:", error);  // Log any errors
-    });
+  }).finally(() => {
+    window.location.href = "index.html";
   });
+}
 </script>
 
 </body>
