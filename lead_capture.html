@@ -53,6 +53,36 @@
     button:hover {
       background-color: #0066cc;
     }
+    .loader {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #004080;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+    }
   </style>
 </head>
 <body>
@@ -81,16 +111,37 @@
         </label>
       </div>
 
-      <button type="submit">Start the Quiz</button>
+      <button type="submit" id="submitBtn">Start the Quiz</button>
     </form>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
   </div>
 
 <script>
 function saveLead(e) {
   e.preventDefault();
 
+  const submitBtn = document.getElementById("submitBtn");
+  const loader = document.getElementById("loader");
+  const overlay = document.getElementById("overlay");
+
+  submitBtn.disabled = true;
+  loader.style.display = "block";
+  overlay.style.display = "block";
+
   const leadId = crypto.randomUUID();
+  const leadData = {
+    name: document.getElementById("name").value,
+    state: document.getElementById("state").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value
+  };
+
   localStorage.setItem("leadId", leadId);
+  localStorage.setItem("leadData", JSON.stringify(leadData));
 
   fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
     method: "POST",
@@ -105,7 +156,14 @@ function saveLead(e) {
       consent: "yes"
     })
   }).finally(() => {
-    window.location.href = "index.html";
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 500);
+  }).catch((err) => {
+    console.error("Error saving lead:", err);
+    loader.style.display = "none";
+    overlay.style.display = "none";
+    submitBtn.disabled = false;
   });
 }
 </script>

@@ -101,6 +101,36 @@
     .cta a:hover {
         background-color: #218838;
     }
+    .loader {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #004080;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+    }
 </style>
 </head>
 <body>
@@ -211,22 +241,22 @@
             <label><input type="radio" name="q10" value="1"> No, not interested</label>
         </div>
 
-        <button type="button" onclick="calculateScore()">See My Results</button>
+        <button type="button" onclick="calculateScore()" id="submitBtn">See My Results</button>
     </form>
 
     <div id="result"></div>
+    <div class="overlay" id="overlay"></div>
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+    </div>
     <div class="cta" id="cta" style="display:none;">
         <a href="https://calendly.com/august-financialgrowthgroup/30min" target="_blank">📅 Book a Free Consultation</a>
     </div>
 </div>
 
 
-<script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" onload="emailjs.init('vMiHr5c9aL7jTaGJn')" onerror="console.error('EmailJS SDK failed to load')"></script>
 <script>
-(function () {
-  emailjs.init("vMiHr5c9aL7jTaGJn"); // replace with your EmailJS public key
-})();
-
 function calculateScore() {
     let totalScore = 0;
     let answers = {};
@@ -259,6 +289,13 @@ function calculateScore() {
     const leadData = JSON.parse(localStorage.getItem("leadData")) || {};
     const leadId = localStorage.getItem("leadId") || "unknown";
 
+    const submitBtn = document.getElementById("submitBtn");
+    const loader = document.getElementById("loader");
+    const overlay = document.getElementById("overlay");
+    submitBtn.disabled = true;
+    loader.style.display = "block";
+    overlay.style.display = "block";
+
     // Optional: save quiz results locally
     localStorage.setItem("quizResults", JSON.stringify({
         leadId,
@@ -266,7 +303,15 @@ function calculateScore() {
         answers
     }));
 
-    // Send email via EmailJS
+    // Send email via EmailJS (guard if the SDK failed to load)
+    if (typeof emailjs === 'undefined' || !emailjs.send) {
+        console.error('EmailJS is not available. Skipping send.');
+        setTimeout(() => {
+            window.location.href = `results.html?score=${normalizedScore}`;
+        }, 500);
+        return;
+    }
+
     emailjs.send(
         "service_ywrmw2f",   // replace with your EmailJS service ID
         "template_m7e9oh9",  // replace with your EmailJS template ID
@@ -293,6 +338,7 @@ function calculateScore() {
     )
     .then(() => {
         // Email sent successfully, redirect to results page
+        console.log("Email sent successfully");
         window.location.href = `results.html?score=${normalizedScore}`;
     })
     .catch((err) => {
