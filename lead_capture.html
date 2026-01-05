@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Start Roth Conversion Quiz</title>
-<style>
-  body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 40px; }
-  .box { max-width: 500px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-  h1 { text-align: center; color: #004080; }
-  label { display: block; margin-top: 15px; font-weight: bold; }
-  input[type="text"], input[type="email"], input[type="tel"] { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-  .checkbox { margin-top: 20px; }
-  button { margin-top: 25px; width: 100%; background-color: #004080; color: white; padding: 12px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; }
-  button:hover { background-color: #0066cc; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start Roth Conversion Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 40px; }
+    .box { max-width: 500px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #004080; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input[type="text"], input[type="email"], input[type="tel"] { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+    .checkbox { margin-top: 20px; }
+    button { margin-top: 25px; width: 100%; background-color: #004080; color: white; padding: 12px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #0066cc; }
+  </style>
 </head>
 <body>
 
@@ -45,42 +45,44 @@
   </form>
 </div>
 
-<script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
-  emailjs.init("vMiHr5c9aL7jTaGJn");
-
   document.getElementById("leadForm").addEventListener("submit", function(e) {
-    e.preventDefault();
+    e.preventDefault();  // Prevent the form from submitting the traditional way
 
+    // Grab values from the form
     const name = document.getElementById("name").value.trim();
     const state = document.getElementById("state").value.trim();
     const phone = document.getElementById("phone").value.trim();
     const email = document.getElementById("email").value.trim();
     const consent = document.getElementById("consent").checked;
 
-    if (!consent) { 
-      alert("You must consent to proceed."); 
-      return; 
+    // Validation for empty or unchecked fields
+    if (!name || !state || !phone || !email || !consent) {
+      alert("Please fill out all fields and provide consent.");
+      return;
     }
 
+    // Store the lead data in localStorage
     let leadId = localStorage.getItem("leadId");
     if (!leadId) {
-      leadId = crypto.randomUUID();
+      leadId = crypto.randomUUID(); // Generate a new leadId if it doesn't exist
       localStorage.setItem("leadId", leadId);
     }
 
-    const leadData = { leadId, name, state, phone, email, consent: "yes" };
+    const leadData = {
+      leadId, 
+      name, 
+      state, 
+      phone, 
+      email, 
+      consent: "yes"
+    };
+
+    // Store locally for future use (e.g., quiz page)
     localStorage.setItem("leadData", JSON.stringify(leadData));
 
-    emailjs.send("service_6ksg4yp", "template_atp2yjk", leadData)
-      .then(() => {
-        // Redirect only after email send is successful
-        window.location.href = "index.html";
-      })
-      .catch(() => {
-        // Still redirect even if email fails
-        window.location.href = "index.html";
-      });
+    // Redirect to the quiz page
+    window.location.href = "index.html";
   });
 </script>
 
