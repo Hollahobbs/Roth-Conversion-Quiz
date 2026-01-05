@@ -47,51 +47,37 @@
 
 <script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
-  // Initialize EmailJS
-  emailjs.init("vMiHr5c9aL7jTaGJn"); // Replace with your public key
+  emailjs.init("vMiHr5c9aL7jTaGJn");
 
   document.getElementById("leadForm").addEventListener("submit", function(e) {
-    e.preventDefault(); // prevent default submission
+    e.preventDefault();
 
-    // Grab field values
     const name = document.getElementById("name").value.trim();
     const state = document.getElementById("state").value.trim();
     const phone = document.getElementById("phone").value.trim();
     const email = document.getElementById("email").value.trim();
     const consent = document.getElementById("consent").checked;
 
-    if (!consent) {
-      alert("You must consent to proceed.");
-      return;
+    if (!consent) { 
+      alert("You must consent to proceed."); 
+      return; 
     }
 
-    // Generate or reuse leadId
     let leadId = localStorage.getItem("leadId");
     if (!leadId) {
       leadId = crypto.randomUUID();
       localStorage.setItem("leadId", leadId);
     }
 
-    const leadData = {
-      leadId,
-      name,
-      state,
-      phone,
-      email,
-      consent: "yes"
-    };
-
-    // Store lead info locally for use on quiz page
+    const leadData = { leadId, name, state, phone, email, consent: "yes" };
     localStorage.setItem("leadData", JSON.stringify(leadData));
 
-    // Send email via EmailJS
     emailjs.send("service_6ksg4yp", "template_atp2yjk", leadData)
       .then(() => {
-        // Redirect to quiz page after success
+        // Redirect only after email send is successful
         window.location.href = "index.html";
       })
-      .catch((err) => {
-        console.error("EmailJS error:", err);
+      .catch(() => {
         // Still redirect even if email fails
         window.location.href = "index.html";
       });
