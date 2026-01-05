@@ -249,12 +249,12 @@ function calculateScore() {
     const normalizedScore = Math.round((totalScore / maxScore) * 100);
     const leadId = localStorage.getItem("leadId");
 
-fetch("https://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJHQhHqYpjN1FvMPoqKLh4H3drKteRZKQG_al/exec", {
+fetch("Phttps://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJHQhHqYpjN1FvMPoqKLh4H3drKteRZKQG_al/exec", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     type: "quiz",
-    leadId: leadId,
+    leadId: leadId || "unknown",
     score: normalizedScore,
     q1: answers.qA,
     q2: answers.qB,
@@ -269,7 +269,10 @@ fetch("https://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJH
     q11: answers.q9,
     q12: answers.q10
   })
+}).finally(() => {
+  window.location.href = `results.html?score=${normalizedScore}`;
 });
+
 
 
     window.location.href = `results.html?score=${normalizedScore}`;
