@@ -85,7 +85,12 @@
     </form>
   </div>
 
+<script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
+(function() {
+  emailjs.init({ publicKey: "vMiHr5c9aL7jTaGJn" });
+})();
+
 document.getElementById("leadForm").addEventListener("submit", function(e){
   e.preventDefault();
 
@@ -96,8 +101,7 @@ document.getElementById("leadForm").addEventListener("submit", function(e){
     localStorage.setItem("leadId", leadId);
   }
 
-  const payload = {
-    type: "lead",
+  const leadData = {
     leadId: leadId,
     name: document.getElementById("name").value,
     state: document.getElementById("state").value,
@@ -106,17 +110,29 @@ document.getElementById("leadForm").addEventListener("submit", function(e){
     consent: "yes"
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  }).finally(() => {
-    // Redirect to index.html
+  // Store locally for use on quiz page
+  localStorage.setItem("leadData", JSON.stringify(leadData));
+
+  // Send email notification
+  emailjs.send(
+    "service_6ksg4yp",
+    "template_atp2yjk",
+    {
+      leadId: leadData.leadId,
+      name: leadData.name,
+      state: leadData.state,
+      phone: leadData.phone,
+      email: leadData.email,
+      consent: leadData.consent
+    }
+  ).finally(() => {
+    // Redirect to quiz
     window.location.href = "index.html";
   });
 });
 </script>
+
+
 
 </body>
 </html>
