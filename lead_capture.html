@@ -61,7 +61,7 @@
     <img src="fgg_logo.png" style="max-width:200px; display:block; margin:0 auto 20px;">
     <h1>Before You Start</h1>
 
-    <form onsubmit="saveLead(event)">
+    <form id="leadForm">
       <label>Full Name</label>
       <input type="text" id="name" required>
 
@@ -86,29 +86,36 @@
   </div>
 
 <script>
-function saveLead(e) {
+document.getElementById("leadForm").addEventListener("submit", function(e){
   e.preventDefault();
 
-  const leadId = crypto.randomUUID();
-  localStorage.setItem("leadId", leadId);
+  // Generate or reuse leadId
+  let leadId = localStorage.getItem("leadId");
+  if (!leadId) {
+    leadId = crypto.randomUUID();
+    localStorage.setItem("leadId", leadId);
+  }
+
+  const payload = {
+    type: "lead",
+    leadId: leadId,
+    name: document.getElementById("name").value,
+    state: document.getElementById("state").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value,
+    consent: "yes"
+  };
 
   fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      type: "lead",
-      leadId: leadId,
-      name: document.getElementById("name").value,
-      state: document.getElementById("state").value,
-      phone: document.getElementById("phone").value,
-      email: document.getElementById("email").value,
-      consent: "yes"
-    })
+    body: JSON.stringify(payload)
   }).finally(() => {
+    // Redirect to index.html
     window.location.href = "index.html";
   });
-}
+});
 </script>
 
 </body>
