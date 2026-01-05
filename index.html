@@ -221,7 +221,12 @@
 </div>
 
 
+<script src="https://cdn.emailjs.com/sdk/4.4.1/email.min.js"></script>
 <script>
+(function () {
+  emailjs.init("vMiHr5c9aL7jTaGJn"); // replace with your EmailJS public key
+})();
+
 function calculateScore() {
     let totalScore = 0;
     let answers = {};
@@ -251,34 +256,53 @@ function calculateScore() {
 
     const maxScore = 51;
     const normalizedScore = Math.round((totalScore / maxScore) * 100);
-    const leadId = localStorage.getItem("leadId");
+    const leadData = JSON.parse(localStorage.getItem("leadData")) || {};
+    const leadId = localStorage.getItem("leadId") || "unknown";
 
-    fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            type: "quiz",
-            leadId: leadId || "unknown",
+    // Optional: save quiz results locally
+    localStorage.setItem("quizResults", JSON.stringify({
+        leadId,
+        score: normalizedScore,
+        answers
+    }));
+
+    // Send email via EmailJS
+    emailjs.send(
+        "service_ywrmw2f",   // replace with your EmailJS service ID
+        "template_m7e9oh9",  // replace with your EmailJS template ID
+        {
+            leadId: leadId,
+            name: leadData.name || "",
+            email: leadData.email || "",
+            phone: leadData.phone || "",
+            state: leadData.state || "",
             score: normalizedScore,
-            q1: answers.qA,
-            q2: answers.qB,
-            q3: answers.q1,
-            q4: answers.q2,
-            q5: answers.q3,
-            q6: answers.q4,
-            q7: answers.q5,
-            q8: answers.q6,
-            q9: answers.q7,
-            q10: answers.q8,
-            q11: answers.q9,
-            q12: answers.q10
-        })
-    }).finally(() => {
+            qA: answers.qA,
+            qB: answers.qB,
+            q1: answers.q1,
+            q2: answers.q2,
+            q3: answers.q3,
+            q4: answers.q4,
+            q5: answers.q5,
+            q6: answers.q6,
+            q7: answers.q7,
+            q8: answers.q8,
+            q9: answers.q9,
+            q10: answers.q10
+        }
+    )
+    .then(() => {
+        // Email sent successfully, redirect to results page
+        window.location.href = `results.html?score=${normalizedScore}`;
+    })
+    .catch((err) => {
+        console.error("Email sending failed", err);
+        // Still redirect even if email fails
         window.location.href = `results.html?score=${normalizedScore}`;
     });
 }
 </script>
+
 
 
 
