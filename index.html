@@ -224,6 +224,7 @@
 <script>
 function calculateScore() {
     let totalScore = 0;
+    let answers = {};
 
     const qA = document.querySelector('input[name="qA"]:checked');
     const qB = document.querySelector('input[name="qB"]:checked');
@@ -235,6 +236,8 @@ function calculateScore() {
 
     totalScore += parseInt(qA.value);
     totalScore += parseInt(qB.value);
+    answers.qA = qA.value;
+    answers.qB = qB.value;
 
     for (let i = 1; i <= 10; i++) {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
@@ -243,41 +246,39 @@ function calculateScore() {
             return;
         }
         totalScore += parseInt(selected.value);
+        answers[`q${i}`] = selected.value;
     }
 
-    const maxScore = 1 + 10 + 40;
+    const maxScore = 51;
     const normalizedScore = Math.round((totalScore / maxScore) * 100);
     const leadId = localStorage.getItem("leadId");
 
-fetch("Phttps://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJHQhHqYpjN1FvMPoqKLh4H3drKteRZKQG_al/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    type: "quiz",
-    leadId: leadId || "unknown",
-    score: normalizedScore,
-    q1: answers.qA,
-    q2: answers.qB,
-    q3: answers.q1,
-    q4: answers.q2,
-    q5: answers.q3,
-    q6: answers.q4,
-    q7: answers.q5,
-    q8: answers.q6,
-    q9: answers.q7,
-    q10: answers.q8,
-    q11: answers.q9,
-    q12: answers.q10
-  })
-}).finally(() => {
-  window.location.href = `results.html?score=${normalizedScore}`;
-});
-
-
-
-    window.location.href = `results.html?score=${normalizedScore}`;
+    fetch("https://script.google.com/macros/s/AKfycbxmA4VoHt5Svc-D48TGL4kR5NqlYl6qJHQhHqYpjN1FvMPoqKLh4H3drKteRZKQG_al/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            type: "quiz",
+            leadId: leadId || "unknown",
+            score: normalizedScore,
+            q1: answers.qA,
+            q2: answers.qB,
+            q3: answers.q1,
+            q4: answers.q2,
+            q5: answers.q3,
+            q6: answers.q4,
+            q7: answers.q5,
+            q8: answers.q6,
+            q9: answers.q7,
+            q10: answers.q8,
+            q11: answers.q9,
+            q12: answers.q10
+        })
+    }).finally(() => {
+        window.location.href = `results.html?score=${normalizedScore}`;
+    });
 }
 </script>
+
 
 
 </body>
