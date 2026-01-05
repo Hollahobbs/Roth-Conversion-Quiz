@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,23 +11,27 @@
       background-color: #f8f9fa;
       padding: 40px;
     }
+
     .box {
       max-width: 500px;
       margin: auto;
       background: #ffffff;
       padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
     h1 {
       text-align: center;
       color: #004080;
     }
+
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
     }
+
     input[type="text"],
     input[type="email"],
     input[type="tel"] {
@@ -36,9 +41,11 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
+
     .checkbox {
       margin-top: 20px;
     }
+
     button {
       margin-top: 25px;
       width: 100%;
@@ -50,9 +57,11 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #0066cc;
     }
+
     .loader {
       display: none;
       position: fixed;
@@ -61,6 +70,7 @@
       transform: translate(-50%, -50%);
       z-index: 9999;
     }
+
     .spinner {
       border: 4px solid #f3f3f3;
       border-top: 4px solid #004080;
@@ -69,10 +79,17 @@
       height: 40px;
       animation: spin 1s linear infinite;
     }
+
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
+
     .overlay {
       display: none;
       position: fixed;
@@ -85,6 +102,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="box">
@@ -120,53 +138,36 @@
     <div class="spinner"></div>
   </div>
 
-<script>
-function saveLead(e) {
-  e.preventDefault();
+  <script>
+    function saveLead(e) {
+      e.preventDefault();
 
-  const submitBtn = document.getElementById("submitBtn");
-  const loader = document.getElementById("loader");
-  const overlay = document.getElementById("overlay");
+      const submitBtn = document.getElementById("submitBtn");
+      const loader = document.getElementById("loader");
+      const overlay = document.getElementById("overlay");
 
-  submitBtn.disabled = true;
-  loader.style.display = "block";
-  overlay.style.display = "block";
+      submitBtn.disabled = true;
+      loader.style.display = "block";
+      overlay.style.display = "block";
 
-  const leadId = crypto.randomUUID();
-  const leadData = {
-    name: document.getElementById("name").value,
-    state: document.getElementById("state").value,
-    phone: document.getElementById("phone").value,
-    email: document.getElementById("email").value
-  };
+      const leadId = crypto.randomUUID();
+      const leadData = {
+        name: document.getElementById("name").value,
+        state: document.getElementById("state").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value
+      };
 
-  localStorage.setItem("leadId", leadId);
-  localStorage.setItem("leadData", JSON.stringify(leadData));
+      localStorage.setItem("leadId", leadId);
+      localStorage.setItem("leadData", JSON.stringify(leadData));
 
-  fetch("https://script.google.com/macros/s/AKfycbxHsKDMSwS-OQeowCpV-fo8NK2ZqJXgQfZwf46kjQ85ASNSjV73VbgTSDX-rcFGE4lg/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      type: "lead",
-      leadId: leadId,
-      name: document.getElementById("name").value,
-      state: document.getElementById("state").value,
-      phone: document.getElementById("phone").value,
-      email: document.getElementById("email").value,
-      consent: "yes"
-    })
-  }).finally(() => {
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 500);
-  }).catch((err) => {
-    console.error("Error saving lead:", err);
-    loader.style.display = "none";
-    overlay.style.display = "none";
-    submitBtn.disabled = false;
-  });
-}
-</script>
+      // Server-side recording moved to the quiz page; keep local copy and redirect
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 500);
+    }
+  </script>
 
 </body>
+
 </html>

@@ -5,12 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roth Conversion Quiz | August So Financial Growth Group</title>
 <meta name="description" content="Take this 60-second Roth Conversion Readiness Quiz to see if converting now could reduce future taxes and improve retirement flexibility.">
-<link rel="canonical" href="https://yourdomain.com/roth-quiz">
-<meta property="og:title" content="Roth Conversion Readiness Quiz">
-<meta property="og:description" content="Did you know you may be able to reduce the tax cost of a Roth conversion? Take this quick quiz to find out.">
-<meta property="og:image" content="https://financialgrowthgroup.com/roth-quiz-preview.jpg">
-<meta property="og:url" content="https://financialgrowthgroup.com/roth-quiz">
-<meta property="og:type" content="website">
 
 <style>
     body {
@@ -75,32 +69,6 @@
     button:hover {
         background-color: #0066cc;
     }
-    #result {
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 5px;
-    }
-    .low { background-color: #f8d7da; color: #721c24; }
-    .medium { background-color: #fff3cd; color: #856404; }
-    .high { background-color: #d4edda; color: #155724; }
-    .cta {
-        text-align: center;
-        margin-top: 20px;
-    }
-    .cta a {
-        background-color: #28a745;
-        color: white;
-        padding: 12px 18px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-    .cta a:hover {
-        background-color: #218838;
-    }
     .loader {
         display: none;
         position: fixed;
@@ -142,11 +110,9 @@
 
 <div class="container">
     <h1>Is a Roth Conversion Right for You?</h1>
-<p style="text-align:center; font-size:16px; color:#555;">Take this 60-second quiz to see if converting now could help reduce future taxes.</p>
+    <p style="text-align:center; font-size:16px; color:#555;">Take this 60-second quiz to see if converting now could help reduce future taxes.</p>
+    
     <form id="quizForm">
-
-        <!-- Questions -->
-        
         <div class="question">
             <h3>1. Did you know you may be able to save up to 50% of the cost of the taxes on your Roth conversion?</h3>
             <label><input type="radio" name="qA" value="1"> Yes</label>
@@ -244,19 +210,19 @@
         <button type="button" onclick="calculateScore()" id="submitBtn">See My Results</button>
     </form>
 
-    <div id="result"></div>
     <div class="overlay" id="overlay"></div>
     <div class="loader" id="loader">
         <div class="spinner"></div>
     </div>
-    <div class="cta" id="cta" style="display:none;">
-        <a href="https://calendly.com/august-financialgrowthgroup/30min" target="_blank">📅 Book a Free Consultation</a>
-    </div>
 </div>
 
-
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" onload="emailjs.init('vMiHr5c9aL7jTaGJn')" onerror="console.error('EmailJS SDK failed to load')"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+// Initialize EmailJS
+(function(){
+    emailjs.init('vMiHr5c9aL7jTaGJn');
+})();
+
 function calculateScore() {
     let totalScore = 0;
     let answers = {};
@@ -296,62 +262,81 @@ function calculateScore() {
     loader.style.display = "block";
     overlay.style.display = "block";
 
-    // Optional: save quiz results locally
+    // Save quiz results locally
     localStorage.setItem("quizResults", JSON.stringify({
         leadId,
         score: normalizedScore,
         answers
     }));
 
-    // Send email via EmailJS (guard if the SDK failed to load)
-    if (typeof emailjs === 'undefined' || !emailjs.send) {
-        console.error('EmailJS is not available. Skipping send.');
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKy0cC0PbGltuxsklCQ7SBrbcGdKio1kxrqvwsEE_Loz9cJHgoQMM6g17p2fl7m-fo/exec";
+
+    // Payload for Google Sheets
+    const scriptPayload = {
+        type: 'quiz',
+        leadId: leadId,
+        name: leadData.name || "",
+        state: leadData.state || "",
+        phone: leadData.phone || "",
+        email: leadData.email || "",
+        score: normalizedScore,
+        q1: answers.qA,
+        q2: answers.qB,
+        q3: answers.q1,
+        q4: answers.q2,
+        q5: answers.q3,
+        q6: answers.q4,
+        q7: answers.q5,
+        q8: answers.q6,
+        q9: answers.q7,
+        q10: answers.q8,
+        q11: answers.q9,
+        q12: answers.q10
+    };
+
+    // Payload for EmailJS
+    const emailPayload = {
+        leadId: leadId,
+        name: leadData.name || "",
+        email: leadData.email || "",
+        phone: leadData.phone || "",
+        state: leadData.state || "",
+        score: normalizedScore,
+        qA: answers.qA,
+        qB: answers.qB,
+        q1: answers.q1,
+        q2: answers.q2,
+        q3: answers.q3,
+        q4: answers.q4,
+        q5: answers.q5,
+        q6: answers.q6,
+        q7: answers.q7,
+        q8: answers.q8,
+        q9: answers.q9,
+        q10: answers.q10
+    };
+
+    // Send to Google Sheets using no-cors (data will be sent but we can't read response)
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(scriptPayload)
+    }).catch(err => console.log('Sheet POST attempt:', err));
+
+    // Send email via EmailJS
+    const emailPromise = emailjs.send("service_ywrmw2f", "template_m7e9oh9", emailPayload)
+        .then(() => console.log('Email sent successfully'))
+        .catch(err => console.error('Email failed:', err));
+
+    // Wait a bit for requests to complete, then redirect
+    Promise.allSettled([emailPromise]).finally(() => {
         setTimeout(() => {
             window.location.href = `results.html?score=${normalizedScore}`;
-        }, 500);
-        return;
-    }
-
-    emailjs.send(
-        "service_ywrmw2f",   // replace with your EmailJS service ID
-        "template_m7e9oh9",  // replace with your EmailJS template ID
-        {
-            leadId: leadId,
-            name: leadData.name || "",
-            email: leadData.email || "",
-            phone: leadData.phone || "",
-            state: leadData.state || "",
-            score: normalizedScore,
-            qA: answers.qA,
-            qB: answers.qB,
-            q1: answers.q1,
-            q2: answers.q2,
-            q3: answers.q3,
-            q4: answers.q4,
-            q5: answers.q5,
-            q6: answers.q6,
-            q7: answers.q7,
-            q8: answers.q8,
-            q9: answers.q9,
-            q10: answers.q10
-        }
-    )
-    .then(() => {
-        // Email sent successfully, redirect to results page
-        console.log("Email sent successfully");
-        window.location.href = `results.html?score=${normalizedScore}`;
-    })
-    .catch((err) => {
-        console.error("Email sending failed", err);
-        // Still redirect even if email fails
-        window.location.href = `results.html?score=${normalizedScore}`;
+        }, 1000);
     });
 }
 </script>
-
-
-
-
 
 </body>
 </html>
