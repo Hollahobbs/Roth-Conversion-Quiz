@@ -237,8 +237,8 @@ function calculateScore() {
 
     totalScore += parseInt(qA.value);
     totalScore += parseInt(qB.value);
-    answers.qA = qA.value;
-    answers.qB = qB.value;
+    answers.qA = qA.parentElement.textContent.trim();
+    answers.qB = qB.parentElement.textContent.trim();
 
     for (let i = 1; i <= 10; i++) {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
@@ -247,7 +247,7 @@ function calculateScore() {
             return;
         }
         totalScore += parseInt(selected.value);
-        answers[`q${i}`] = selected.value;
+        answers[`q${i}`] = selected.parentElement.textContent.trim();
     }
 
     const maxScore = 51;
@@ -269,7 +269,7 @@ function calculateScore() {
         answers
     }));
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKy0cC0PbGltuxsklCQ7SBrbcGdKio1kxrqvwsEE_Loz9cJHgoQMM6g17p2fl7m-fo/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAYR-ftM1anBCEQVqt4uCUO_wJi2UnflONOoyjiFSIz94rl_knduOmDvQFCHM0IFtx/exec";
 
     // Payload for Google Sheets
     const scriptPayload = {
